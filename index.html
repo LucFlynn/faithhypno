@@ -3,6 +3,11 @@
   Faith Poirier Hypnotherapy — paid-search landing page (static, deploy to Vercel).
   Target domain: lp.faithhypno.com  (the Google Ads campaign final URLs point here)
 
+  Structure follows the MECLABS Landing Page Blueprint sequence
+  (C = 4m + 3v + 2(i-f) - 2a):
+    CONNECT (hero)  -> EXPLAIN (what this is) -> who it's for -> how it works
+    -> PERSUADE (credentials + proof + reviews) -> EXCHANGE (closer CTA).
+
   DKI: ?ag= in the URL swaps the hero headline/subhead + <title>.
     provider -> https://lp.faithhypno.com/?ag=provider
     sleep    -> https://lp.faithhypno.com/?ag=sleep
@@ -12,15 +17,18 @@
   default angle still shows with JS disabled.
 
   Setup status:
-    1. (done) Booking link -> Faith's live Heal.me page
+    1. (done) Booking link -> Faith's free-consultation page on faithhypno.com
     2. (done) Images -> Faith's own photos from faithhypno.com (filestack CDN)
     3. (done) GTM container GTM-PDGQPF7R installed (head + noscript).
        Configure a trigger on the custom event `book_call_click` in GTM
        to fire the Google Ads conversion / GA4 event.
 
-  Conversion note: booking completes on heal.me (off-domain), so a true
+  VERIFY before scaling spend: the "1,200+ hours of training" claim.
+  ("Certified Clinical Hypnotherapist (CHt)" is confirmed on faithhypno.com.)
+
+  Conversion note: booking completes off-domain (Heal.me-backed), so a true
   "booking confirmed" event can't be tracked. book_call_click (CTA click) is the
-  proxy. Reconcile against Heal.me's dashboard.
+  proxy. Reconcile against the booking dashboard.
 -->
 <html lang="en" class="ag-default">
 <head>
@@ -82,17 +90,25 @@
     html.ag-default .angle--default { display: block; }
 
     /* HERO / CLOSER */
-    .hero, .closer { position: relative; min-height: 460px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4rem 1.5rem; }
+    .hero, .closer { position: relative; min-height: 480px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4rem 1.5rem; }
     .hero { border-radius: 0 0 6px 6px; }
     .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .hero-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(40,50,58,0.62), rgba(40,50,58,0.32)); }
-    .hero-scrim.light { background: rgba(45,55,62,0.42); }
-    .hero-content, .closer-content { position: relative; z-index: 2; max-width: 640px; text-align: center; color: #fff; }
+    .hero-scrim { position: absolute; inset: 0; background: rgba(40,50,58,0.34); }
+    .hero-scrim.light { background: rgba(45,55,62,0.30); }
+    /* Frosted panel behind the words so they stay readable over any photo */
+    .hero-content, .closer-content { position: relative; z-index: 2; max-width: 620px; text-align: center; color: #fff;
+      background: rgba(34,42,50,0.46); backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+      border: 1px solid rgba(255,255,255,0.14); border-radius: 18px;
+      padding: clamp(1.8rem, 4vw, 2.8rem) clamp(1.4rem, 4vw, 2.6rem);
+      box-shadow: 0 30px 70px -40px rgba(0,0,0,0.6); }
     .hero-content h1, .closer-content h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.12; margin-bottom: 1.1rem; text-wrap: balance; text-shadow: 0 2px 18px rgba(0,0,0,0.25); }
     .hero-sub, .closer-content p { font-size: clamp(1rem, 2vw, 1.18rem); line-height: 1.6; font-weight: 300; margin-bottom: 1.8rem; opacity: 0.95; text-shadow: 0 1px 10px rgba(0,0,0,0.3); }
 
+    .eyebrow { text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.72rem; font-weight: 600; margin-bottom: 1rem; opacity: 0.92; }
+
     .btn { display: inline-block; font-family: var(--sans); font-size: 0.98rem; font-weight: 500; letter-spacing: 0.02em; color: #fff; background: var(--blue); border: none; border-radius: 999px; padding: 0.85rem 2rem; cursor: pointer; text-decoration: none; transition: background 0.2s ease, transform 0.2s ease; box-shadow: 0 8px 24px -10px rgba(91,124,153,0.7); }
     .btn:hover { background: var(--blue-deep); transform: translateY(-1px); }
+    .cta-micro { margin-top: 0.75rem; font-size: 0.8rem; letter-spacing: 0.04em; opacity: 0.9; }
 
     .stars-line { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.1rem; font-size: 0.85rem; }
     .stars { color: #e7c873; letter-spacing: 0.08em; }
@@ -101,6 +117,8 @@
     /* BANDS */
     .band { padding: clamp(3rem, 8vh, 5.5rem) 1.5rem; }
     .band.alt { background: var(--bg-alt); }
+    .band-head { max-width: 720px; margin: 0 auto; text-align: center; }
+    .band-head .lede { margin-bottom: 0; }
     .two-col { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: 0.85fr 1fr; gap: 3rem; align-items: center; }
     .two-col.reverse { grid-template-columns: 1fr 0.85fr; }
     @media (max-width: 760px) { .two-col, .two-col.reverse { grid-template-columns: 1fr; gap: 2rem; } }
@@ -110,13 +128,24 @@
     .photo-card::after { content: ''; position: absolute; inset: 18px -18px -18px 18px; background: #e3e8e8; border-radius: 10px; z-index: -1; }
 
     h2.serif { font-size: clamp(1.7rem, 3.4vw, 2.4rem); color: var(--ink); margin-bottom: 1.1rem; line-height: 1.15; }
-    .lede { color: var(--ink-soft); margin-bottom: 0.9rem; }
+    .lede { color: var(--ink-soft); margin-bottom: 0.9rem; line-height: 1.6; }
     .soft { color: var(--ink-soft); margin-top: 1rem; font-style: italic; }
 
     ul.check { list-style: none; display: grid; gap: 0.55rem; }
     ul.check li { position: relative; padding-left: 1.6rem; color: var(--ink-soft); line-height: 1.5; }
     ul.check li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
-    .center-list { max-width: 520px; margin: 0 auto; }
+    .center-list { max-width: 520px; margin: 0 auto; text-align: left; }
+
+    /* EXPLAIN — value-proposition cards */
+    .vp-grid { max-width: 1000px; margin: 2.4rem auto 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+    .vp-card { background: #fff; border-radius: 12px; padding: 1.9rem; box-shadow: 0 16px 40px -30px rgba(50,60,70,0.4); }
+    .vp-card h3 { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; color: var(--ink); margin-bottom: 0.5rem; }
+    .vp-card p { color: var(--ink-soft); line-height: 1.55; font-size: 0.96rem; }
+
+    /* PERSUADE — credentials strip */
+    .creds { max-width: 900px; margin: 2.2rem auto 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.4rem; text-align: center; }
+    .creds-num { display: block; font-family: var(--serif); font-weight: 600; font-size: clamp(1.7rem, 4vw, 2.3rem); color: var(--blue-deep); line-height: 1; margin-bottom: 0.4rem; }
+    .creds-label { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.4; }
 
     .step { margin-bottom: 1.2rem; }
     .step strong { display: block; font-weight: 600; color: var(--ink); margin-bottom: 0.2rem; }
@@ -145,12 +174,14 @@
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDGQPF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <main class="fp">
-    <!-- HERO -->
+
+    <!-- ===== CONNECT — hero (headline matches the ad the visitor clicked) ===== -->
     <section class="hero">
       <!-- Faith leading a virtual hypnotherapy session -->
       <img class="hero-img" src="https://cdn.filestackcontent.com/resize=width:1600,fit:max/R3Mk8dzlSbKuYrRoD4Ji" alt="" loading="eager" fetchpriority="high" />
       <div class="hero-scrim"></div>
       <div class="hero-content">
+        <p class="eyebrow">Certified Clinical Hypnotherapist &middot; Virtual Sessions</p>
         <div class="angle angle--provider">
           <h1>Virtual Hypnotherapy for Busy Women</h1>
           <p class="hero-sub">Reconnect with calm and clarity from wherever you are — guided sessions designed for an overloaded nervous system.</p>
@@ -168,6 +199,7 @@
           <p class="hero-sub">Hypnotherapy to reduce burnout, calm the nervous system, and help you reconnect with who you are beneath the stress.</p>
         </div>
         <a class="btn" href="https://faithhypno.com/services/free-15-minute-consultation-call" target="_blank" rel="noopener" onclick="fpBook()">Book a FREE 15-Minute Call</a>
+        <p class="cta-micro">Free &middot; 15 minutes &middot; No obligation</p>
         <div class="stars-line">
           <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
           <span class="stars-label">Verified 5-star reviews</span>
@@ -175,7 +207,29 @@
       </div>
     </section>
 
-    <!-- FIT -->
+    <!-- ===== EXPLAIN — what this actually is (understand + believe) ===== -->
+    <section class="band alt">
+      <div class="band-head">
+        <h2 class="serif">More Than Talk Therapy</h2>
+        <p class="lede">Hypnotherapy blends honest conversation, practical cognitive tools, and guided hypnosis — so change happens at the level where stress and habits actually live, not just in the retelling.</p>
+      </div>
+      <div class="vp-grid">
+        <div class="vp-card">
+          <h3 class="serif">Beyond Talking About It</h3>
+          <p>We don't just discuss what's hard. Guided hypnosis helps you get beneath it — calming the nervous system instead of only naming the problem.</p>
+        </div>
+        <div class="vp-card">
+          <h3 class="serif">Virtual &amp; Private</h3>
+          <p>Sessions from the comfort of home, anywhere in the U.S. No commute, no waiting room — just a quiet, focused hour that's entirely yours.</p>
+        </div>
+        <div class="vp-card">
+          <h3 class="serif">Calm, Direct &amp; Practical</h3>
+          <p>You leave with tools you can actually use between sessions, so the shifts hold steady in everyday life.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Who it's for (connect with motivation) ===== -->
     <section class="band">
       <div class="two-col">
         <div class="photo-card">
@@ -199,7 +253,7 @@
       </div>
     </section>
 
-    <!-- WHAT A SESSION LOOKS LIKE -->
+    <!-- ===== How it works (reduce anxiety — they know what to expect) ===== -->
     <section class="band alt">
       <div class="two-col reverse">
         <div class="col-text">
@@ -215,8 +269,21 @@
       </div>
     </section>
 
-    <!-- WHAT PEOPLE NOTICE -->
+    <!-- ===== PERSUADE — credentials (why her), outcomes, proof ===== -->
     <section class="band">
+      <div class="band-head">
+        <h2 class="serif">Why Work With Faith</h2>
+        <p class="lede">Credentialed, experienced, and genuinely in your corner.</p>
+      </div>
+      <div class="creds">
+        <div class="creds-item"><span class="creds-num">CHt</span><span class="creds-label">Certified Clinical Hypnotherapist</span></div>
+        <div class="creds-item"><span class="creds-num">1,200+</span><span class="creds-label">Hours of training</span></div>
+        <div class="creds-item"><span class="creds-num">Virtual</span><span class="creds-label">Sessions across the U.S.</span></div>
+        <div class="creds-item"><span class="creds-num">5-Star</span><span class="creds-label">Rated by clients</span></div>
+      </div>
+    </section>
+
+    <section class="band alt">
       <div class="notice-card">
         <h2 class="serif">What People Often Notice</h2>
         <ul class="check center-list">
@@ -229,8 +296,7 @@
       </div>
     </section>
 
-    <!-- REVIEWS -->
-    <section class="band alt">
+    <section class="band">
       <p class="reviews-eyebrow">Verified Reviews</p>
       <h2 class="serif center">What Clients Are Saying</h2>
       <div class="reviews-grid">
@@ -252,15 +318,16 @@
       </div>
     </section>
 
-    <!-- CLOSER -->
+    <!-- ===== EXCHANGE — closer CTA (minimize friction + anxiety) ===== -->
     <section class="closer">
       <!-- Calm session in a garden-view room -->
       <img class="hero-img" src="https://cdn.filestackcontent.com/resize=width:1600,fit:max/sS5ISiIUQvGuevgNdszS" alt="" />
       <div class="hero-scrim light"></div>
       <div class="closer-content">
         <h2 class="serif">Ready to Feel Lighter and Clearer?</h2>
-        <p>If you&rsquo;re tired of carrying everything on your own, I&rsquo;d love to support you. One simple conversation to see what you need.</p>
+        <p>It starts with a free 15-minute call — no pressure, no commitment. Just a conversation to hear what&rsquo;s going on and see if we&rsquo;re the right fit.</p>
         <a class="btn" href="https://faithhypno.com/services/free-15-minute-consultation-call" target="_blank" rel="noopener" onclick="fpBook()">Book a FREE 15-Minute Call</a>
+        <p class="cta-micro">Free &middot; 15 minutes &middot; 100% confidential</p>
       </div>
     </section>
 
@@ -272,7 +339,7 @@
   </main>
 
   <script>
-    // Fire the book_call_click proxy conversion, then let the link open Heal.me.
+    // Fire the book_call_click proxy conversion, then let the link open the booking page.
     function fpBook() {
       window.dataLayer = window.dataLayer || [];
       var ag = (document.documentElement.className || 'ag-default').replace('ag-', '');

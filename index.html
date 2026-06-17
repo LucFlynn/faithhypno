@@ -1,0 +1,274 @@
+<!doctype html>
+<!--
+  Faith Poirier Hypnotherapy — paid-search landing page (static, deploy to Vercel).
+  Target domain: lp.faithhypno.com  (the Google Ads campaign final URLs point here)
+
+  DKI: ?ag= in the URL swaps the hero headline/subhead + <title>.
+    provider -> https://lp.faithhypno.com/?ag=provider
+    sleep    -> https://lp.faithhypno.com/?ag=sleep
+    anxiety  -> https://lp.faithhypno.com/?ag=anxiety
+    no/unknown param -> "default"
+  The swap is class-based and set in <head> before paint => no flash, and the
+  default angle still shows with JS disabled.
+
+  BEFORE LAUNCH — replace the 3 placeholders marked `REPLACE`:
+    1. (done) Booking link -> Faith's live Heal.me page
+    2. (done) Images -> Faith's own photos from faithhypno.com (filestack CDN)
+    3. GTM-XXXXXXX   -> Faith's GTM container id (optional — book_call_click fires either way)
+
+  Conversion note: booking completes on heal.me (off-domain), so a true
+  "booking confirmed" event can't be tracked. book_call_click (CTA click) is the
+  proxy. Reconcile against Heal.me's dashboard.
+-->
+<html lang="en" class="ag-default">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Virtual hypnotherapy with Faith Poirier — calm an overactive mind, ease anxiety and stress, and sleep again. Book a free 15-minute call." />
+  <title>Faith Poirier Hypnotherapy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- DKI: set angle + title before paint (no flash) -->
+  <script>
+    (function () {
+      var KNOWN = { provider: 1, sleep: 1, anxiety: 1 };
+      var ag = (new URLSearchParams(location.search).get('ag') || '').toLowerCase();
+      if (!KNOWN[ag]) ag = 'default';
+      document.documentElement.className = 'ag-' + ag;
+      var T = {
+        provider: 'Virtual Hypnotherapy | Faith Poirier',
+        sleep: 'Hypnotherapy for Sleep | Faith Poirier',
+        anxiety: 'Hypnotherapy for Anxiety | Faith Poirier',
+        default: 'Faith Poirier Hypnotherapy'
+      };
+      document.title = T[ag];
+    })();
+  </script>
+
+  <!-- Google Tag Manager (optional). Replace GTM-XXXXXXX with the real container id.
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  -->
+
+  <style>
+    :root {
+      --bg: #f7f5f1;
+      --bg-alt: #eef1f1;
+      --ink: #2f3437;
+      --ink-soft: #5f676b;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Mulish', system-ui, sans-serif;
+      --blue: #7d97ac;
+      --blue-deep: #5b7c99;
+      --card-shadow: 0 24px 60px -28px rgba(50,60,70,0.45);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); font-family: var(--sans); color: var(--ink); font-weight: 300; }
+    .serif { font-family: var(--serif); font-weight: 500; }
+    .center { text-align: center; }
+
+    /* DKI angle visibility — only the active angle's hero text shows */
+    .angle { display: none; }
+    html.ag-provider .angle--provider,
+    html.ag-sleep .angle--sleep,
+    html.ag-anxiety .angle--anxiety,
+    html.ag-default .angle--default { display: block; }
+
+    /* HERO / CLOSER */
+    .hero, .closer { position: relative; min-height: 460px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4rem 1.5rem; }
+    .hero { border-radius: 0 0 6px 6px; }
+    .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(40,50,58,0.62), rgba(40,50,58,0.32)); }
+    .hero-scrim.light { background: rgba(45,55,62,0.42); }
+    .hero-content, .closer-content { position: relative; z-index: 2; max-width: 640px; text-align: center; color: #fff; }
+    .hero-content h1, .closer-content h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.12; margin-bottom: 1.1rem; text-wrap: balance; text-shadow: 0 2px 18px rgba(0,0,0,0.25); }
+    .hero-sub, .closer-content p { font-size: clamp(1rem, 2vw, 1.18rem); line-height: 1.6; font-weight: 300; margin-bottom: 1.8rem; opacity: 0.95; text-shadow: 0 1px 10px rgba(0,0,0,0.3); }
+
+    .btn { display: inline-block; font-family: var(--sans); font-size: 0.98rem; font-weight: 500; letter-spacing: 0.02em; color: #fff; background: var(--blue); border: none; border-radius: 999px; padding: 0.85rem 2rem; cursor: pointer; text-decoration: none; transition: background 0.2s ease, transform 0.2s ease; box-shadow: 0 8px 24px -10px rgba(91,124,153,0.7); }
+    .btn:hover { background: var(--blue-deep); transform: translateY(-1px); }
+
+    .stars-line { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.1rem; font-size: 0.85rem; }
+    .stars { color: #e7c873; letter-spacing: 0.08em; }
+    .stars-label { opacity: 0.9; }
+
+    /* BANDS */
+    .band { padding: clamp(3rem, 8vh, 5.5rem) 1.5rem; }
+    .band.alt { background: var(--bg-alt); }
+    .two-col { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: 0.85fr 1fr; gap: 3rem; align-items: center; }
+    .two-col.reverse { grid-template-columns: 1fr 0.85fr; }
+    @media (max-width: 760px) { .two-col, .two-col.reverse { grid-template-columns: 1fr; gap: 2rem; } }
+
+    .photo-card { position: relative; }
+    .photo-card img { width: 100%; border-radius: 10px; box-shadow: var(--card-shadow); display: block; aspect-ratio: 4/5; object-fit: cover; }
+    .photo-card::after { content: ''; position: absolute; inset: 18px -18px -18px 18px; background: #e3e8e8; border-radius: 10px; z-index: -1; }
+
+    h2.serif { font-size: clamp(1.7rem, 3.4vw, 2.4rem); color: var(--ink); margin-bottom: 1.1rem; line-height: 1.15; }
+    .lede { color: var(--ink-soft); margin-bottom: 0.9rem; }
+    .soft { color: var(--ink-soft); margin-top: 1rem; font-style: italic; }
+
+    ul.check { list-style: none; display: grid; gap: 0.55rem; }
+    ul.check li { position: relative; padding-left: 1.6rem; color: var(--ink-soft); line-height: 1.5; }
+    ul.check li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
+    .center-list { max-width: 520px; margin: 0 auto; }
+
+    .step { margin-bottom: 1.2rem; }
+    .step strong { display: block; font-weight: 600; color: var(--ink); margin-bottom: 0.2rem; }
+    .step span { color: var(--ink-soft); line-height: 1.5; }
+
+    .notice-card { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 14px; box-shadow: var(--card-shadow); padding: clamp(2rem, 5vw, 3rem); text-align: center; }
+    .notice-card h2.serif { margin-bottom: 1.4rem; }
+
+    .reviews-eyebrow { text-align: center; text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.74rem; color: var(--blue-deep); margin-bottom: 0.6rem; font-weight: 600; }
+    h2.serif.center { text-align: center; margin-bottom: 2.4rem; }
+    .reviews-grid { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4rem; }
+    .review { background: #fff; border-radius: 12px; padding: 1.8rem; box-shadow: 0 16px 40px -28px rgba(50,60,70,0.4); }
+    .r-stars { color: #e7c873; letter-spacing: 0.1em; font-size: 0.9rem; display: block; margin-bottom: 0.8rem; }
+    .review blockquote { font-size: 0.98rem; line-height: 1.6; color: var(--ink); margin-bottom: 1rem; font-weight: 400; }
+    .review figcaption { font-size: 0.88rem; color: var(--blue-deep); font-weight: 600; }
+
+    .footer { background: #dfe4e4; text-align: center; padding: 2.8rem 1.5rem; }
+    .footer .logo { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); margin-bottom: 1rem; }
+    .footer .disclaimer { max-width: 680px; margin: 0 auto 1rem; font-size: 0.74rem; color: var(--ink-soft); line-height: 1.55; }
+    .footer .links a { color: var(--blue-deep); font-size: 0.8rem; text-decoration: none; }
+    .footer .links a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="fp">
+    <!-- HERO -->
+    <section class="hero">
+      <!-- Faith leading a virtual hypnotherapy session -->
+      <img class="hero-img" src="https://cdn.filestackcontent.com/resize=width:1600,fit:max/R3Mk8dzlSbKuYrRoD4Ji" alt="" loading="eager" fetchpriority="high" />
+      <div class="hero-scrim"></div>
+      <div class="hero-content">
+        <div class="angle angle--provider">
+          <h1>Virtual Hypnotherapy for Busy Women</h1>
+          <p class="hero-sub">Reconnect with calm and clarity from wherever you are — guided sessions designed for an overloaded nervous system.</p>
+        </div>
+        <div class="angle angle--sleep">
+          <h1>Hypnotherapy for Sleep. Quiet Your Mind and Finally Rest.</h1>
+          <p class="hero-sub">If your body is exhausted but your mind won't switch off, hypnotherapy can help you settle the racing thoughts and sleep again.</p>
+        </div>
+        <div class="angle angle--anxiety">
+          <h1>Calm an Anxious Mind. Without Medication.</h1>
+          <p class="hero-sub">A gentle, drug-free approach to easing anxiety and stress so you can feel steady, present, and in control again.</p>
+        </div>
+        <div class="angle angle--default">
+          <h1>Quiet the Mind. Break Free from Burnout.</h1>
+          <p class="hero-sub">Hypnotherapy to reduce burnout, calm the nervous system, and help you reconnect with who you are beneath the stress.</p>
+        </div>
+        <a class="btn" href="https://faithhypno.com/services/free-15-minute-consultation-call" target="_blank" rel="noopener" onclick="fpBook()">Book a FREE 15-Minute Call</a>
+        <div class="stars-line">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="stars-label">Verified 5-star reviews</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FIT -->
+    <section class="band">
+      <div class="two-col">
+        <div class="photo-card">
+          <!-- Faith Poirier headshot -->
+          <img src="https://cdn.filestackcontent.com/resize=width:900,fit:max/zaKj7l3RSvWp0QUJt63V" alt="Faith Poirier, certified clinical hypnotherapist" loading="lazy" />
+        </div>
+        <div class="col-text">
+          <h2 class="serif">This Work May Be a Fit If You&rsquo;re Experiencing&hellip;</h2>
+          <p class="lede">I support people who are navigating:</p>
+          <ul class="check">
+            <li>Burnout or emotional exhaustion</li>
+            <li>Chronic stress, anxiety, or an overactive mind</li>
+            <li>Difficulty sleeping or shutting off at night</li>
+            <li>Confidence struggles, self-doubt, or a loud inner critic</li>
+            <li>Feeling stuck despite trying talk therapy</li>
+            <li>Habits, coping behaviors, or patterns that feel hard to break</li>
+            <li>Life transitions, identity shifts, or loss of direction</li>
+          </ul>
+          <p class="soft">There are tools that help you feel better &mdash; gently and quickly.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT A SESSION LOOKS LIKE -->
+    <section class="band alt">
+      <div class="two-col reverse">
+        <div class="col-text">
+          <h2 class="serif">What a Session Looks Like</h2>
+          <div class="step"><strong>Brief check-in (5&ndash;10 minutes)</strong><span>We clarify what&rsquo;s present and what you want support with.</span></div>
+          <div class="step"><strong>Targeted hypnosis (25&ndash;35 minutes)</strong><span>A deeply relaxed, focused state using guided imagery and suggestions tailored to you.</span></div>
+          <div class="step"><strong>Reorientation + take-home support (5&ndash;10 minutes)</strong><span>We review what to notice and practice between sessions.</span></div>
+        </div>
+        <div class="photo-card">
+          <!-- Faith in an in-person session -->
+          <img src="https://cdn.filestackcontent.com/resize=width:900,fit:max/M1NI4zuERAy9hkgBV5nW" alt="Faith Poirier in a hypnotherapy session" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT PEOPLE NOTICE -->
+    <section class="band">
+      <div class="notice-card">
+        <h2 class="serif">What People Often Notice</h2>
+        <ul class="check center-list">
+          <li>A calmer baseline and quieter mental chatter</li>
+          <li>Less reactivity to stress</li>
+          <li>Improved sleep and easier transitions into rest</li>
+          <li>More grounded confidence and clarity</li>
+          <li>A sense of forward movement instead of feeling stuck</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section class="band alt">
+      <p class="reviews-eyebrow">Verified Reviews</p>
+      <h2 class="serif center">What Clients Are Saying</h2>
+      <div class="reviews-grid">
+        <figure class="review">
+          <span class="r-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <blockquote>Faith is such a beautiful soul. Her sessions helped me relax, release, and tap into a deeper sense of peace and clarity. I always felt safe and supported in her presence.</blockquote>
+          <figcaption>Diva</figcaption>
+        </figure>
+        <figure class="review">
+          <span class="r-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <blockquote>I truly appreciate the care, intention, and attention you&rsquo;ve given me throughout our work together. I really did enjoy our time, and I&rsquo;m grateful for the tools and reflections you&rsquo;ve shared.</blockquote>
+          <figcaption>Ericka L.</figcaption>
+        </figure>
+        <figure class="review">
+          <span class="r-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <blockquote>Working with Faith has been a genuinely positive and supportive experience. She consistently went above and beyond to accommodate my needs. Faith made me feel truly seen and supported.</blockquote>
+          <figcaption>Verified Client</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- CLOSER -->
+    <section class="closer">
+      <!-- Calm session in a garden-view room -->
+      <img class="hero-img" src="https://cdn.filestackcontent.com/resize=width:1600,fit:max/sS5ISiIUQvGuevgNdszS" alt="" />
+      <div class="hero-scrim light"></div>
+      <div class="closer-content">
+        <h2 class="serif">Ready to Feel Lighter and Clearer?</h2>
+        <p>If you&rsquo;re tired of carrying everything on your own, I&rsquo;d love to support you. One simple conversation to see what you need.</p>
+        <a class="btn" href="https://faithhypno.com/services/free-15-minute-consultation-call" target="_blank" rel="noopener" onclick="fpBook()">Book a FREE 15-Minute Call</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p class="logo">Faith Poirier Hypnotherapy</p>
+      <p class="disclaimer">Hypnotherapy is a complementary wellness modality and is not a substitute for medical, psychological, or psychiatric care. No claims of diagnosis or cure are made. Always consult your healthcare provider for medical or mental health concerns.</p>
+      <p class="links"><a href="/privacy.html">Privacy Policy</a></p>
+    </footer>
+  </main>
+
+  <script>
+    // Fire the book_call_click proxy conversion, then let the link open Heal.me.
+    function fpBook() {
+      window.dataLayer = window.dataLayer || [];
+      var ag = (document.documentElement.className || 'ag-default').replace('ag-', '');
+      window.dataLayer.push({ event: 'book_call_click', ad_group: ag });
+    }
+  </script>
+</body>
+</html>

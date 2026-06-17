@@ -11,10 +11,12 @@
   The swap is class-based and set in <head> before paint => no flash, and the
   default angle still shows with JS disabled.
 
-  BEFORE LAUNCH — replace the 3 placeholders marked `REPLACE`:
+  Setup status:
     1. (done) Booking link -> Faith's live Heal.me page
     2. (done) Images -> Faith's own photos from faithhypno.com (filestack CDN)
-    3. GTM-XXXXXXX   -> Faith's GTM container id (optional — book_call_click fires either way)
+    3. (done) GTM container GTM-PDGQPF7R installed (head + noscript).
+       Configure a trigger on the custom event `book_call_click` in GTM
+       to fire the Google Ads conversion / GA4 event.
 
   Conversion note: booking completes on heal.me (off-domain), so a true
   "booking confirmed" event can't be tracked. book_call_click (CTA click) is the
@@ -47,9 +49,13 @@
     })();
   </script>
 
-  <!-- Google Tag Manager (optional). Replace GTM-XXXXXXX with the real container id.
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
-  -->
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PDGQPF7R');</script>
+  <!-- End Google Tag Manager -->
 
   <style>
     :root {
@@ -135,6 +141,9 @@
   </style>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDGQPF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   <main class="fp">
     <!-- HERO -->
     <section class="hero">

@@ -16,7 +16,9 @@ Static HTML/CSS landing page for the Google Ads campaign `FH | Search | Hypnothe
 Booking happens on **Heal.me** (off-domain), so a true "booking confirmed" event
 can't be tracked. `book_call_click` (CTA click) is the proxy — it's pushed to
 `window.dataLayer` on every CTA click. Reconcile against the Heal.me dashboard.
-GTM is optional: uncomment the snippet in `<head>` and set the container id.
+GTM container **GTM-PDGQPF7R** is installed (head + noscript) on both pages.
+In GTM, add a Custom Event trigger on `book_call_click` and wire it to the
+Google Ads conversion / GA4 event.
 
 ## Booking + images — DONE
 - CTAs point to her free-consultation booking page: `https://faithhypno.com/services/free-15-minute-consultation-call` (her own domain; booking is Heal.me-backed)

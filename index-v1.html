@@ -1,0 +1,395 @@
+<!doctype html>
+<!--
+  Faith Elise Hypnotherapy — paid-search landing page (static, deploy to Vercel).
+  Target domain: lp.faithhypno.com  (the Google Ads campaign final URLs point here)
+
+  Structure follows the MECLABS Landing Page Blueprint sequence
+  (C = 4m + 3v + 2(i-f) - 2a):
+    CONNECT (hero)  -> EXPLAIN (what this is) -> who it's for -> how it works
+    -> PERSUADE (credentials + proof + reviews) -> EXCHANGE (closer CTA).
+
+  DKI: ?ag= in the URL swaps the hero headline/subhead + <title>.
+    provider -> https://lp.faithhypno.com/?ag=provider
+    sleep    -> https://lp.faithhypno.com/?ag=sleep
+    anxiety  -> https://lp.faithhypno.com/?ag=anxiety
+    no/unknown param -> "default"
+  The swap is class-based and set in <head> before paint => no flash, and the
+  default angle still shows with JS disabled.
+
+  Setup status:
+    1. (done) Booking link -> Faith's free-consultation page on faithhypno.com
+    2. (done) Images -> Faith's own photos from faithhypno.com (filestack CDN)
+    3. (done) GTM container GTM-PDGQPF7R installed (head + noscript).
+       Configure a trigger on the custom event `book_call_click` in GTM
+       to fire the Google Ads conversion / GA4 event.
+
+  Credentials confirmed on faithhypno.com: Certified Clinical Hypnotherapist
+  (CHt), graduate of the Hypnosis Motivation Institute (HMI) with 1,200+
+  training hours, American Hypnosis Association professional member.
+
+  Conversion note: booking completes off-domain (Heal.me-backed), so a true
+  "booking confirmed" event can't be tracked. book_call_click (CTA click) is the
+  proxy. Reconcile against the booking dashboard.
+-->
+<html lang="en" class="ag-default">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Virtual hypnotherapy with Faith Elise — calm an overactive mind, ease anxiety and stress, and sleep again. Book a free 15-minute call." />
+  <title>Faith Elise Hypnotherapy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- DKI: set angle + title before paint (no flash) -->
+  <script>
+    (function () {
+      var KNOWN = { provider: 1, sleep: 1, anxiety: 1 };
+      var ag = (new URLSearchParams(location.search).get('ag') || '').toLowerCase();
+      if (!KNOWN[ag]) ag = 'default';
+      document.documentElement.className = 'ag-' + ag;
+      var T = {
+        provider: 'Virtual Hypnotherapy | Faith Elise',
+        sleep: 'Hypnotherapy for Sleep | Faith Elise',
+        anxiety: 'Hypnotherapy for Anxiety | Faith Elise',
+        default: 'Faith Elise Hypnotherapy'
+      };
+      document.title = T[ag];
+    })();
+  </script>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PDGQPF7R');</script>
+  <!-- End Google Tag Manager -->
+
+  <style>
+    :root {
+      --bg: #f7f5f1;
+      --bg-alt: #eef1f1;
+      --ink: #2f3437;
+      --ink-soft: #5f676b;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Mulish', system-ui, sans-serif;
+      --blue: #7d97ac;
+      --blue-deep: #5b7c99;
+      --card-shadow: 0 24px 60px -28px rgba(50,60,70,0.45);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); font-family: var(--sans); color: var(--ink); font-weight: 300; }
+    .serif { font-family: var(--serif); font-weight: 500; }
+    .center { text-align: center; }
+
+    /* Brand header */
+    .site-header { background: var(--bg); text-align: center; padding: 0.9rem 1.5rem; }
+    .site-header img { height: clamp(46px, 9vw, 62px); width: auto; display: inline-block; }
+    .phone-link { display: inline-block; margin-top: 0.55rem; font-size: 0.98rem; font-weight: 600; color: var(--blue-deep); text-decoration: none; }
+    .phone-link:hover { text-decoration: underline; }
+
+    /* DKI angle visibility — only the active angle's hero text shows */
+    .angle { display: none; }
+    html.ag-provider .angle--provider,
+    html.ag-sleep .angle--sleep,
+    html.ag-anxiety .angle--anxiety,
+    html.ag-default .angle--default { display: block; }
+
+    /* HERO / CLOSER */
+    .hero, .closer { position: relative; min-height: 480px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4rem 1.5rem; }
+    .hero { border-radius: 0 0 6px 6px; }
+    .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero-scrim { position: absolute; inset: 0; background: rgba(40,50,58,0.34); }
+    .hero-scrim.light { background: rgba(45,55,62,0.30); }
+    /* Frosted panel behind the words so they stay readable over any photo */
+    .hero-content, .closer-content { position: relative; z-index: 2; max-width: 620px; text-align: center; color: #fff;
+      background: rgba(34,42,50,0.46); backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+      border: 1px solid rgba(255,255,255,0.14); border-radius: 18px;
+      padding: clamp(1.8rem, 4vw, 2.8rem) clamp(1.4rem, 4vw, 2.6rem);
+      box-shadow: 0 30px 70px -40px rgba(0,0,0,0.6); }
+    .hero-content h1, .closer-content h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.12; margin-bottom: 1.1rem; text-wrap: balance; text-shadow: 0 2px 18px rgba(0,0,0,0.25); }
+    .hero-sub, .closer-content p { font-size: clamp(1rem, 2vw, 1.18rem); line-height: 1.6; font-weight: 300; margin-bottom: 1.8rem; opacity: 0.95; text-shadow: 0 1px 10px rgba(0,0,0,0.3); }
+
+    .eyebrow { text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.72rem; font-weight: 600; margin-bottom: 1rem; opacity: 0.92; }
+
+    .btn { display: inline-block; font-family: var(--sans); font-size: 0.98rem; font-weight: 500; letter-spacing: 0.02em; color: #fff; background: var(--blue); border: none; border-radius: 999px; padding: 0.85rem 2rem; cursor: pointer; text-decoration: none; transition: background 0.2s ease, transform 0.2s ease; box-shadow: 0 8px 24px -10px rgba(91,124,153,0.7); }
+    .btn:hover { background: var(--blue-deep); transform: translateY(-1px); }
+    .cta-micro { margin-top: 0.75rem; font-size: 0.8rem; letter-spacing: 0.04em; opacity: 0.9; }
+    .hero-points { list-style: none; display: inline-block; text-align: left; margin: 0.2rem auto 1.6rem; }
+    .hero-points li { position: relative; padding-left: 1.7rem; margin: 0.4rem 0; font-size: 0.98rem; line-height: 1.35; }
+    .hero-points li::before { content: '\2713'; position: absolute; left: 0; top: 0; color: #e7c873; font-weight: 700; }
+
+    .stars-line { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.1rem; font-size: 0.85rem; }
+    .stars { color: #e7c873; letter-spacing: 0.08em; }
+    .stars-label { opacity: 0.9; }
+
+    /* BANDS */
+    .band { padding: clamp(3rem, 8vh, 5.5rem) 1.5rem; }
+    .band.alt { background: var(--bg-alt); }
+    .band-head { max-width: 720px; margin: 0 auto; text-align: center; }
+    .band-head .lede { margin-bottom: 0; }
+    .two-col { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: 0.85fr 1fr; gap: 3rem; align-items: center; }
+    .two-col.reverse { grid-template-columns: 1fr 0.85fr; }
+    @media (max-width: 760px) { .two-col, .two-col.reverse { grid-template-columns: 1fr; gap: 2rem; } }
+
+    .photo-card { position: relative; }
+    .photo-card img { width: 100%; border-radius: 10px; box-shadow: var(--card-shadow); display: block; aspect-ratio: 4/5; object-fit: cover; }
+    .photo-card::after { content: ''; position: absolute; inset: 18px -18px -18px 18px; background: #e3e8e8; border-radius: 10px; z-index: -1; }
+
+    h2.serif { font-size: clamp(1.7rem, 3.4vw, 2.4rem); color: var(--ink); margin-bottom: 1.1rem; line-height: 1.15; }
+    .lede { color: var(--ink-soft); margin-bottom: 0.9rem; line-height: 1.6; }
+    .soft { color: var(--ink-soft); margin-top: 1rem; font-style: italic; }
+
+    ul.check { list-style: none; display: grid; gap: 0.55rem; }
+    ul.check li { position: relative; padding-left: 1.6rem; color: var(--ink-soft); line-height: 1.5; }
+    ul.check li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
+    .center-list { max-width: 520px; margin: 0 auto; text-align: left; }
+
+    /* EXPLAIN — value-proposition cards */
+    .vp-grid { max-width: 1000px; margin: 2.4rem auto 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+    .vp-card { background: #fff; border-radius: 12px; padding: 1.9rem; box-shadow: 0 16px 40px -30px rgba(50,60,70,0.4); }
+    .vp-card h3 { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; color: var(--ink); margin-bottom: 0.5rem; }
+    .vp-card p { color: var(--ink-soft); line-height: 1.55; font-size: 0.96rem; }
+
+    /* PERSUADE — credentials strip */
+    .creds { max-width: 900px; margin: 2.2rem auto 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.4rem; text-align: center; }
+    .creds-num { display: block; font-family: var(--serif); font-weight: 600; font-size: clamp(1.7rem, 4vw, 2.3rem); color: var(--blue-deep); line-height: 1; margin-bottom: 0.4rem; }
+    .creds-label { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.4; }
+
+    .step { margin-bottom: 1.2rem; }
+    .step strong { display: block; font-weight: 600; color: var(--ink); margin-bottom: 0.2rem; }
+    .step span { color: var(--ink-soft); line-height: 1.5; }
+
+    .notice-card { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 14px; box-shadow: var(--card-shadow); padding: clamp(2rem, 5vw, 3rem); text-align: center; }
+    .notice-card h2.serif { margin-bottom: 1.4rem; }
+
+    .reviews-eyebrow { text-align: center; text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.74rem; color: var(--blue-deep); margin-bottom: 0.6rem; font-weight: 600; }
+    h2.serif.center { text-align: center; margin-bottom: 2.4rem; }
+    .reviews-grid { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4rem; }
+    .review { background: #fff; border-radius: 12px; padding: 1.8rem; box-shadow: 0 16px 40px -28px rgba(50,60,70,0.4); }
+    .r-stars { color: #e7c873; letter-spacing: 0.1em; font-size: 0.9rem; display: block; margin-bottom: 0.8rem; }
+    .review blockquote { font-size: 0.98rem; line-height: 1.6; color: var(--ink); margin-bottom: 1rem; font-weight: 400; }
+    .review figcaption { font-size: 0.88rem; color: var(--blue-deep); font-weight: 600; }
+
+    .footer { background: #dfe4e4; text-align: center; padding: 2.8rem 1.5rem; }
+    .footer .logo { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); margin-bottom: 1rem; }
+    .footer .disclaimer { max-width: 680px; margin: 0 auto 1rem; font-size: 0.74rem; color: var(--ink-soft); line-height: 1.55; }
+    .footer .links a { color: var(--blue-deep); font-size: 0.8rem; text-decoration: none; }
+    .footer .links a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDGQPF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <main class="fp">
+
+    <!-- Brand header -->
+    <header class="site-header">
+      <img src="https://cdn.filestackcontent.com/resize=width:600,fit:max/aNeXShLPSNq0m1jcME8p" alt="Faith Elise Hypnotherapy" width="600" height="251" />
+      <br />
+      <a class="phone-link" href="tel:8885419946">Call 888-541-9946</a>
+    </header>
+
+    <!-- ===== CONNECT — hero (headline matches the ad the visitor clicked) ===== -->
+    <section class="hero">
+      <!-- Faith leading a virtual hypnotherapy session -->
+      <img class="hero-img" src="https://cdn.filestackcontent.com/resize=width:1600,fit:max/R3Mk8dzlSbKuYrRoD4Ji" alt="" loading="eager" fetchpriority="high" />
+      <div class="hero-scrim"></div>
+      <div class="hero-content">
+        <p class="eyebrow">Certified Clinical Hypnotherapist &middot; Virtual Sessions</p>
+        <div class="angle angle--provider">
+          <h1>Virtual Hypnotherapy for Busy Women</h1>
+          <p class="hero-sub">Reconnect with calm and clarity from wherever you are — guided sessions designed for an overloaded nervous system.</p>
+        </div>
+        <div class="angle angle--sleep">
+          <h1>Hypnotherapy for Sleep. Quiet Your Mind and Finally Rest.</h1>
+          <p class="hero-sub">If your body is exhausted but your mind won't switch off, hypnotherapy can help you settle the racing thoughts and sleep again.</p>
+        </div>
+        <div class="angle angle--anxiety">
+          <h1>Calm an Anxious Mind. Without Medication.</h1>
+          <p class="hero-sub">A gentle, drug-free approach to easing anxiety and stress so you can feel steady, present, and in control again.</p>
+        </div>
+        <div class="angle angle--default">
+          <h1>Quiet the Mind. Break Free from Burnout.</h1>
+          <p class="hero-sub">Hypnotherapy to reduce burnout, calm the nervous system, and help you reconnect with who you are beneath the stress.</p>
+        </div>
+        <ul class="hero-points">
+          <li>Virtual sessions, from the comfort of home</li>
+          <li>More than talk therapy &mdash; tools you keep</li>
+          <li>Free 15-minute consult, no pressure</li>
+        </ul>
+        <a class="btn" href="https://faithhypno.com/services/free-15-minute-consultation-call" target="_blank" rel="noopener" onclick="fpBook()">Book a FREE 15-Minute Call</a>
+        <p class="cta-micro">Free &middot; 15 minutes &middot; No obligation</p>
+        <div class="stars-line">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="stars-label">5-star rated &middot; Certified (CHt) &middot; Virtual across the U.S.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EXPLAIN — what this actually is (understand + believe) ===== -->
+    <section class="band alt">
+      <div class="band-head">
+        <h2 class="serif">More Than Talk Therapy</h2>
+        <p class="lede">Faith blends honest conversation with proven techniques — CBT-based hypnotherapy, guided imagery, NLP, and EFT tapping — so change happens beneath the surface, where stress and habits actually live. You don&rsquo;t just talk about the problem; you leave with practical tools you keep.</p>
+      </div>
+      <div class="vp-grid">
+        <div class="vp-card">
+          <h3 class="serif">Beyond Talking About It</h3>
+          <p>We don't just discuss what's hard. Guided hypnosis helps you get beneath it — calming the nervous system instead of only naming the problem.</p>
+        </div>
+        <div class="vp-card">
+          <h3 class="serif">Virtual &amp; Private</h3>
+          <p>Sessions from the comfort of home, anywhere in the U.S. No commute, no waiting room — just a quiet, focused hour that's entirely yours.</p>
+        </div>
+        <div class="vp-card">
+          <h3 class="serif">Calm, Direct &amp; Practical</h3>
+          <p>You leave with tools you can actually use between sessions, so the shifts hold steady in everyday life.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Who it's for (connect with motivation) ===== -->
+    <section class="band">
+      <div class="two-col">
+        <div class="photo-card">
+          <!-- Faith Elise headshot -->
+          <img src="https://cdn.filestackcontent.com/resize=width:900,fit:max/zaKj7l3RSvWp0QUJt63V" alt="Faith Elise, certified clinical hypnotherapist" loading="lazy" />
+        </div>
+        <div class="col-text">
+          <h2 class="serif">This Work May Be a Fit If You&rsquo;re Experiencing&hellip;</h2>
+          <p class="lede">I support people who are navigating:</p>
+          <ul class="check">
+            <li>Burnout or emotional exhaustion</li>
+            <li>Chronic stress, anxiety, or an overactive mind</li>
+            <li>Difficulty sleeping or shutting off at night</li>
+            <li>Confidence struggles, self-doubt, or a loud inner critic</li>
+            <li>Feeling stuck despite trying talk therapy</li>
+            <li>Habits, coping behaviors, or patterns that feel hard to break</li>
+            <li>Life transitions, identity shifts, or loss of direction</li>
+          </ul>
+          <p class="soft">There are tools that help you feel better &mdash; gently and quickly.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== How it works (reduce anxiety — they know what to expect) ===== -->
+    <section class="band alt">
+      <div class="two-col reverse">
+        <div class="col-text">
+          <h2 class="serif">What a Session Looks Like</h2>
+          <div class="step"><strong>Brief check-in (5&ndash;10 minutes)</strong><span>We clarify what&rsquo;s present and what you want support with.</span></div>
+          <div class="step"><strong>Targeted hypnosis (25&ndash;35 minutes)</strong><span>A deeply relaxed, focused state using guided imagery and suggestions tailored to you.</span></div>
+          <div class="step"><strong>Reorientation + take-home support (5&ndash;10 minutes)</strong><span>We review what to notice and practice between sessions.</span></div>
+        </div>
+        <div class="photo-card">
+          <!-- Faith in an in-person session -->
+          <img src="https://cdn.filestackcontent.com/resize=width:900,fit:max/M1NI4zuERAy9hkgBV5nW" alt="Faith Elise in a hypnotherapy session" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PERSUADE — credentials (why her), outcomes, proof ===== -->
+    <section class="band">
+      <div class="band-head">
+        <h2 class="serif">Why Work With Faith</h2>
+        <p class="lede">A graduate of the nationally accredited Hypnosis Motivation Institute (HMI) and a professional member of the American Hypnosis Association.</p>
+      </div>
+      <div class="creds">
+        <div class="creds-item"><span class="creds-num">CHt</span><span class="creds-label">Certified Clinical Hypnotherapist</span></div>
+        <div class="creds-item"><span class="creds-num">1,200+</span><span class="creds-label">Hours of training at HMI</span></div>
+        <div class="creds-item"><span class="creds-num">AHA</span><span class="creds-label">American Hypnosis Association member</span></div>
+        <div class="creds-item"><span class="creds-num">5-Star</span><span class="creds-label">Rated by clients</span></div>
+      </div>
+    </section>
+
+    <section class="band alt">
+      <div class="notice-card">
+        <h2 class="serif">What People Often Notice</h2>
+        <ul class="check center-list">
+          <li>A calmer baseline and quieter mental chatter</li>
+          <li>Less reactivity to stress</li>
+          <li>Improved sleep and easier transitions into rest</li>
+          <li>More grounded confidence and clarity</li>
+          <li>A sense of forward movement instead of feeling stuck</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band">
+      <p class="reviews-eyebrow">Verified Reviews</p>
+      <h2 class="serif center">What Clients Are Saying</h2>
+      <div class="reviews-grid">
+        <figure class="review">
+          <span class="r-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <blockquote>Before working with Faith, I could not get to bed before 2:00 a.m. most nights &mdash; my mind would not shut off. After our sessions, I started getting to sleep around 11:00 p.m. I felt calmer at night and had practical tools I could use when my mind started racing.</blockquote>
+          <figcaption>Andi</figcaption>
+        </figure>
+        <figure class="review">
+          <span class="r-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <blockquote>I looked confident on the outside, but inside I was always second-guessing myself and feeling like I did not really belong. Faith helped me understand that some of those thoughts were old beliefs, not facts. I started feeling more capable and secure. I highly recommend her.</blockquote>
+          <figcaption>Margo</figcaption>
+        </figure>
+        <figure class="review">
+          <span class="r-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <blockquote>Faith is such a beautiful soul. Her hypnotherapy sessions helped me relax, release, and tap into a deeper sense of peace and clarity. Each session left me feeling lighter and more aligned. I&rsquo;m so grateful and highly recommend her.</blockquote>
+          <figcaption>Stephanie</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===== Incentive — what the free call actually gives them ===== -->
+    <section class="band alt">
+      <div class="band-head">
+        <h2 class="serif">What Happens on Your Free Call</h2>
+        <p class="lede">Fifteen minutes, no cost, no obligation &mdash; just a conversation.</p>
+      </div>
+      <div class="vp-grid">
+        <div class="vp-card">
+          <h3 class="serif">We Talk It Through</h3>
+          <p>Share what&rsquo;s going on in your own words &mdash; no intake forms, no pressure, no script to follow.</p>
+        </div>
+        <div class="vp-card">
+          <h3 class="serif">You Get Clarity</h3>
+          <p>An honest take on whether hypnotherapy is a fit for what you&rsquo;re facing, and how it would work for you.</p>
+        </div>
+        <div class="vp-card">
+          <h3 class="serif">You Leave With a Next Step</h3>
+          <p>Walk away knowing the simplest next thing you can do &mdash; whether or not we end up working together.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EXCHANGE — closer CTA (minimize friction + anxiety) ===== -->
+    <section class="closer">
+      <!-- Calm session in a garden-view room -->
+      <img class="hero-img" src="https://cdn.filestackcontent.com/resize=width:1600,fit:max/sS5ISiIUQvGuevgNdszS" alt="" />
+      <div class="hero-scrim light"></div>
+      <div class="closer-content">
+        <h2 class="serif">Ready to Feel Lighter and Clearer?</h2>
+        <p>It starts with a free 15-minute call — no pressure, no commitment. Just a conversation to hear what&rsquo;s going on and see if we&rsquo;re the right fit.</p>
+        <a class="btn" href="https://faithhypno.com/services/free-15-minute-consultation-call" target="_blank" rel="noopener" onclick="fpBook()">Book a FREE 15-Minute Call</a>
+        <p class="cta-micro">Free &middot; 15 minutes &middot; 100% confidential</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p class="logo">Faith Elise Hypnotherapy</p>
+      <p class="disclaimer">Hypnotherapy is a complementary wellness modality and is not a substitute for medical, psychological, or psychiatric care. No claims of diagnosis or cure are made. Always consult your healthcare provider for medical or mental health concerns.</p>
+      <p class="phone-link" style="margin-bottom: 0.85rem;">Call <a href="tel:8885419946">888-541-9946</a></p>
+      <p class="links"><a href="/privacy.html">Privacy Policy</a></p>
+    </footer>
+  </main>
+
+  <script>
+    // Fire the book_call_click proxy conversion, then let the link open the booking page.
+    function fpBook() {
+      window.dataLayer = window.dataLayer || [];
+      var ag = (document.documentElement.className || 'ag-default').replace('ag-', '');
+      window.dataLayer.push({ event: 'book_call_click', ad_group: ag });
+    }
+  </script>
+</body>
+</html>

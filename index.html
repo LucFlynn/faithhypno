@@ -742,20 +742,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   // quiet link for anyone ready to talk now. To go back to booking-first, swap the
   // .guide-jump CTAs in the markup back to .book links.
   //
-  // Where the guide opt-in posts. Any endpoint accepting a JSON POST works
-  // (Formspree, Kit, Mailchimp, a Vercel function). WITHOUT THIS the primary CTA
-  // collects nothing: it degrades to a plain download and the funnel captures no
-  // email at all. Set it before this page takes paid traffic.
+  // Deliberately empty: the guide is a no-strings download and the page collects
+  // no name, email, or any other detail. Someone clicking a hypnotherapy lead
+  // magnet is disclosing a health interest, so not holding that data at all is
+  // the simplest way to stay clear of HIPAA/PHI questions entirely.
+  // The conversion to optimize on is the `guide_download_click` event, not a form.
+  // Setting this to a JSON POST endpoint re-enables the opt-in form - do not do
+  // that without deciding how the resulting contact data will be handled.
   var OPTIN_ENDPOINT = "";
   var GUIDE_PDF = "assets/switch-off-sequence-guide.pdf";
 
   /* ===================================================================== */
 
   var adGroup = (document.documentElement.className || "ag-default").replace("ag-", "");
-
-  if (!OPTIN_ENDPOINT && window.console) {
-    console.warn("[faithhypno] The primary CTA points at the guide opt-in, but OPTIN_ENDPOINT is empty - the page will hand out the PDF without capturing anything.");
-  }
 
   function track(event, detail) {
     window.dataLayer = window.dataLayer || [];

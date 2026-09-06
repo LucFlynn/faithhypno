@@ -42,11 +42,13 @@ Both live in one CONFIG block at the bottom of `index-v3.html`:
    - `vsl_play` / `vsl_progress` come from the `<video>` element for self-hosted
      files and from Cloudflare's player SDK (loaded on demand) for Stream embeds.
      A YouTube or Vimeo embed would report neither without its own listener.
-2. **`OPTIN_ENDPOINT`** — where the guide opt-in posts (any endpoint taking a
-   JSON POST: Formspree, Kit, Mailchimp, a Vercel function). Left empty, the guide
-   stays a plain download link and no contact details are collected. The markup
-   ships as that download link and JS upgrades it into the form, so the guide is
-   reachable with JS off either way.
+2. **`OPTIN_ENDPOINT`** — **deliberately empty, and staying that way.** The guide
+   is a no-strings download; the page collects no name, email, or anything else.
+   Someone clicking a hypnotherapy lead magnet is disclosing a health interest, so
+   not holding that data at all is the simplest way to stay clear of HIPAA/PHI
+   questions. The opt-in form machinery is still in the file but stays dormant
+   while this is empty. Setting it to a JSON POST endpoint turns the form back on
+   — do not, without first deciding how that contact data gets handled.
 
 ## The lead magnet
 - `assets/switch-off-sequence-guide.html` — source of the 6-page guide.
@@ -66,10 +68,9 @@ lead magnet and treats the call as step two:
    one is solid, the second is a ghost outline under a connector line
    ("Ready to talk now?" / "Not ready to talk yet?"). `provider` leads with the
    call; every other angle leads with the guide. Mid-page CTA stays guide-only.
-2. **The opt-in** captures name + email, fires `guide_lead_submit`, delivers the PDF.
-3. **The hand-off** — the panel that replaces the form is a booking ask
-   (`book_call_click` with `placement: post-guide`), because someone who just took
-   the guide is the warmest reader on the page.
+2. **The download** hands the PDF straight over and fires `guide_download_click`.
+   No form, no data collected — see `OPTIN_ENDPOINT` above. This is the
+   conversion event.
 4. **Booking stays reachable throughout** for high-intent visitors: the header
    button, the hero's paired call button (`hero-secondary`), the `#free-call`
    section, and the closer.
@@ -79,9 +80,9 @@ lead magnet and treats the call as step two:
    whole way down, in CSS, with no JS involved.
 
 Two consequences worth holding onto:
-- **`OPTIN_ENDPOINT` is now load-bearing.** Empty, the primary CTA hands out a PDF
-  and captures nothing at all. The page logs a console warning in that state.
-- **In Google Ads, `guide_lead_submit` should become the primary conversion** while
+- **No contact data is collected anywhere on this page, by design.** `guide_lead_submit`
+  and `guide_lead_error` therefore never fire on the live page.
+- **In Google Ads, `guide_download_click` should be the primary conversion** while
   booking volume is zero — Smart Bidding cannot optimize toward a conversion that
   never fires. Keep `book_call_click` as a secondary/observation conversion and
   move it back to primary once bookings have real volume.
@@ -107,7 +108,7 @@ can't be tracked. `book_call_click` (CTA click) is the proxy. GTM container
 | `vsl_progress` | 25/50/75/100% watched, self-hosted or Stream (v3) | `video_slot`, `percent` |
 | `faq_open` | an FAQ item is opened (v3) | `question` |
 
-In GTM, `guide_lead_submit` is the conversion to optimize on for now, with
+In GTM, `guide_download_click` is the conversion to optimize on for now, with
 `book_call_click` tracked alongside it (see Funnel above). `vsl_progress` fires for
 self-hosted files and Cloudflare Stream — a YouTube/Vimeo embed would need its own
 GTM listener.
@@ -121,9 +122,8 @@ GTM listener.
 ## BEFORE PUTTING v3 IN FRONT OF PAID TRAFFIC
 1. Both VSLs are in. Check `vsl_play` / `vsl_progress` land in GTM preview once
    deployed - the Stream SDK wiring could not be exercised locally.
-2. Set `OPTIN_ENDPOINT` — **blocking**. The primary CTA is the opt-in now, so
-   without it the page's main action captures nothing. Needs a follow-up email
-   sequence behind it too, or the addresses just sit there.
+2. ~~Set `OPTIN_ENDPOINT`~~ — **decided: no opt-in** (HIPAA). The guide is a
+   plain download and `guide_download_click` is the conversion. Nothing to do.
 3. Deploy to a preview URL for Faith to review, then promote to `book.faithhypno.com`.
 4. Verify on-page claims: "1,200+ Hours of Training", the three reviews, and the
    $225 / $195 pricing.
